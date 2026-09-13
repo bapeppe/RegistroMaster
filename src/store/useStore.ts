@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { User, Student, Course, Enrollment, Attendance, Substitution, AttendanceStatus } from '../types';
+import type { User, Student, Course, Enrollment, Attendance, Substitution } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -34,14 +34,11 @@ interface StoreState {
   deleteUser: (id: string) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
   
-  addSubstitution: (sub: Substitution) => void;
-  removeSubstitution: (course_id: string, date: string) => void;
-  
   // Instructor Actions
   recordAttendance: (attendance: Attendance) => Promise<void>;
 }
 
-export const useStore = create<StoreState>((set, get) => ({
+export const useStore = create<StoreState>((set) => ({
   currentUser: null,
   users: [],
   students: [],

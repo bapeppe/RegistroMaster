@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { format } from 'date-fns';
 import { CheckCircle, XCircle, Users, Save } from 'lucide-react';

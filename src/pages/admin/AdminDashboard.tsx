@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
 import { format } from 'date-fns';
 import { Calendar, Users, Activity, ChevronLeft, ChevronRight, Clock, User, Search } from 'lucide-react';
