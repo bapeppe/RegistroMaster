@@ -15,6 +15,11 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+// --- Ping per Cron Job ---
+app.get('/ping', (req, res) => {
+  res.status(200).send('Backend attivo');
+});
+
 // --- Users ---
 app.get('/api/users', async (req, res) => {
   const users = await User.find({});
