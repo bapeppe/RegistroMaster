@@ -118,19 +118,6 @@ export function Login() {
             Accedi
           </button>
         </form>
-
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <p className="text-sm text-gray-500 font-medium mb-2">Nota per il test:</p>
-          <ul className="text-sm text-gray-600 space-y-2">
-            <li className="flex justify-between p-2 bg-gray-50 rounded">
-              <span>La password per il Coordinatore (Mario) è:</span> 
-              <code className="font-bold text-brand-blue">admin</code>
-            </li>
-            <li className="p-2 bg-gray-50 rounded">
-              Gli istruttori accedono direttamente senza password.
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
     </div>
