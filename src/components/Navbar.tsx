@@ -56,18 +56,18 @@ export function Navbar() {
 
       {/* Mobile Bottom Navigation for Admin */}
       {currentUser.role === 'admin' && (
-        <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-safe">
-          <Link to="/admin" className={`flex flex-col items-center gap-1 w-full h-full justify-center transition-colors ${isActive('/admin') ? 'text-brand-blue' : 'text-gray-400 hover:text-gray-600'}`}>
-            <Home size={22} className={isActive('/admin') ? 'fill-blue-50/50' : ''} />
-            <span className="text-[10px] font-bold">Dashboard</span>
+        <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-20 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-safe">
+          <Link to="/admin" className={`flex flex-col items-center gap-1.5 w-full h-full justify-center transition-colors ${isActive('/admin') ? 'text-brand-blue' : 'text-gray-400 hover:text-gray-600'}`}>
+            <Home size={26} className={isActive('/admin') ? 'fill-blue-50/50' : ''} />
+            <span className="text-xs font-bold">Dashboard</span>
           </Link>
-          <Link to="/admin/courses" className={`flex flex-col items-center gap-1 w-full h-full justify-center transition-colors ${isActive('/admin/courses') ? 'text-brand-blue' : 'text-gray-400 hover:text-gray-600'}`}>
-            <BookOpen size={22} className={isActive('/admin/courses') ? 'fill-blue-50/50' : ''} />
-            <span className="text-[10px] font-bold">Corsi</span>
+          <Link to="/admin/courses" className={`flex flex-col items-center gap-1.5 w-full h-full justify-center transition-colors ${isActive('/admin/courses') ? 'text-brand-blue' : 'text-gray-400 hover:text-gray-600'}`}>
+            <BookOpen size={26} className={isActive('/admin/courses') ? 'fill-blue-50/50' : ''} />
+            <span className="text-xs font-bold">Corsi</span>
           </Link>
-          <Link to="/admin/users" className={`flex flex-col items-center gap-1 w-full h-full justify-center transition-colors ${isActive('/admin/users') ? 'text-brand-blue' : 'text-gray-400 hover:text-gray-600'}`}>
-            <UsersIcon size={22} className={isActive('/admin/users') ? 'fill-blue-50/50' : ''} />
-            <span className="text-[10px] font-bold">Utenti</span>
+          <Link to="/admin/users" className={`flex flex-col items-center gap-1.5 w-full h-full justify-center transition-colors ${isActive('/admin/users') ? 'text-brand-blue' : 'text-gray-400 hover:text-gray-600'}`}>
+            <UsersIcon size={26} className={isActive('/admin/users') ? 'fill-blue-50/50' : ''} />
+            <span className="text-xs font-bold">Utenti</span>
           </Link>
         </div>
       )}
