@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useStore } from './store/useStore';
 
 // Components
@@ -24,8 +24,53 @@ function ProtectedRoute({ children, allowedRole }: { children: React.ReactNode, 
   return <>{children}</>;
 }
 
-function App() {
+function MainLayout() {
   const currentUser = useStore((state) => state.currentUser);
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {currentUser && <Navbar />}
+      <div className={`flex-1 w-full ${isLoginPage ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 sm:pb-8'}`}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRole="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/courses" element={
+            <ProtectedRoute allowedRole="admin">
+              <CourseManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedRoute allowedRole="admin">
+              <UserManagement />
+            </ProtectedRoute>
+          } />
+          
+          {/* Instructor Routes */}
+          <Route path="/instructor" element={
+            <ProtectedRoute allowedRole="instructor">
+              <InstructorDashboard />
+            </ProtectedRoute>
+          } />
+
+          {/* Default Route */}
+          <Route path="/" element={
+            <Navigate to={currentUser ? (currentUser.role === 'admin' ? '/admin' : '/instructor') : '/login'} replace />
+          } />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+function App() {
   const isLoading = useStore((state) => state.isLoading);
   const fetchInitialData = useStore((state) => state.fetchInitialData);
 
@@ -43,47 +88,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        {currentUser && <Navbar />}
-        <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 sm:pb-8">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            
-            {/* Admin Routes */}
-            <Route path="/admin" element={
-              <ProtectedRoute allowedRole="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/courses" element={
-              <ProtectedRoute allowedRole="admin">
-                <CourseManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/users" element={
-              <ProtectedRoute allowedRole="admin">
-                <UserManagement />
-              </ProtectedRoute>
-            } />
-            
-            {/* Instructor Routes */}
-            <Route path="/instructor" element={
-              <ProtectedRoute allowedRole="instructor">
-                <InstructorDashboard />
-              </ProtectedRoute>
-            } />
-
-            {/* Root Redirect */}
-            <Route path="/" element={
-              currentUser ? (
-                <Navigate to={currentUser.role === 'admin' ? '/admin' : '/instructor'} replace />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            } />
-          </Routes>
-        </div>
-      </div>
+      <MainLayout />
     </BrowserRouter>
   );
 }
