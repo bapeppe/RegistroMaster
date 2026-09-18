@@ -13,7 +13,8 @@ const User = mongoose.model('User', userSchema);
 // Student Model
 const studentSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
-  name: { type: String, required: true }
+  name: { type: String, required: true },
+  birthYear: { type: Number }
 });
 const Student = mongoose.model('Student', studentSchema);
 

@@ -123,7 +123,14 @@ export function InstructorDashboard() {
             
             return (
               <div key={student.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
-                <span className="font-medium text-lg text-gray-900">{student.name}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-lg text-gray-900">{student.name}</span>
+                  {student.birthYear && (
+                    <span className="bg-gray-200 text-gray-700 text-xs font-bold px-1.5 py-0.5 rounded">
+                      {student.birthYear.toString().slice(-2)}
+                    </span>
+                  )}
+                </div>
                 <div className="flex gap-3">
                   <button
                     onClick={() => toggleAttendance(student.id, 'present')}
@@ -154,8 +161,29 @@ export function InstructorDashboard() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   const val = e.currentTarget.value.trim();
+                  const yearInput = document.getElementById('new-student-year') as HTMLInputElement;
+                  const yearVal = yearInput?.value ? parseInt(yearInput.value) : undefined;
                   if (val && selectedCourse) {
-                    useStore.getState().addNewStudentToCourse(val, selectedCourse);
+                    useStore.getState().addNewStudentToCourse(val, selectedCourse, yearVal);
+                    e.currentTarget.value = '';
+                    if (yearInput) yearInput.value = '';
+                  }
+                }
+              }}
+            />
+            <input 
+              type="number" 
+              placeholder="Anno (es. 2022)" 
+              className="w-full sm:w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue"
+              id="new-student-year"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const nameInput = document.getElementById('new-student-input') as HTMLInputElement;
+                  const val = nameInput?.value.trim();
+                  const yearVal = e.currentTarget.value ? parseInt(e.currentTarget.value) : undefined;
+                  if (val && selectedCourse) {
+                    useStore.getState().addNewStudentToCourse(val, selectedCourse, yearVal);
+                    if (nameInput) nameInput.value = '';
                     e.currentTarget.value = '';
                   }
                 }
@@ -164,10 +192,13 @@ export function InstructorDashboard() {
             <button 
               onClick={() => {
                 const input = document.getElementById('new-student-input') as HTMLInputElement;
+                const yearInput = document.getElementById('new-student-year') as HTMLInputElement;
                 const val = input?.value.trim();
+                const yearVal = yearInput?.value ? parseInt(yearInput.value) : undefined;
                 if (val && selectedCourse) {
-                  useStore.getState().addNewStudentToCourse(val, selectedCourse);
+                  useStore.getState().addNewStudentToCourse(val, selectedCourse, yearVal);
                   if (input) input.value = '';
+                  if (yearInput) yearInput.value = '';
                 }
               }}
               className="bg-brand-blue text-white w-full sm:w-auto px-4 py-2 rounded-lg font-bold hover:bg-blue-900 transition-colors whitespace-nowrap"

@@ -52,9 +52,9 @@ app.get('/api/students', async (req, res) => {
 });
 
 app.post('/api/students', async (req, res) => {
-  const { id, name } = req.body;
+  const { id, name, birthYear } = req.body;
   try {
-    const newStudent = await Student.create({ id, name });
+    const newStudent = await Student.create({ id, name, birthYear });
     res.status(201).json(newStudent);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create student' });

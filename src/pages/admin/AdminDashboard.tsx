@@ -123,8 +123,29 @@ export function AdminDashboard() {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           const val = e.currentTarget.value.trim();
+                          const yearInput = document.getElementById('admin-new-student-year') as HTMLInputElement;
+                          const yearVal = yearInput?.value ? parseInt(yearInput.value) : undefined;
                           if (val && selectedCourseId) {
-                            useStore.getState().addNewStudentToCourse(val, selectedCourseId);
+                            useStore.getState().addNewStudentToCourse(val, selectedCourseId, yearVal);
+                            e.currentTarget.value = '';
+                            if (yearInput) yearInput.value = '';
+                          }
+                        }
+                      }}
+                    />
+                    <input 
+                      type="number" 
+                      placeholder="Anno (es. 2022)" 
+                      className="w-full sm:w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue"
+                      id="admin-new-student-year"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          const nameInput = document.getElementById('admin-new-student-input') as HTMLInputElement;
+                          const val = nameInput?.value.trim();
+                          const yearVal = e.currentTarget.value ? parseInt(e.currentTarget.value) : undefined;
+                          if (val && selectedCourseId) {
+                            useStore.getState().addNewStudentToCourse(val, selectedCourseId, yearVal);
+                            if (nameInput) nameInput.value = '';
                             e.currentTarget.value = '';
                           }
                         }
@@ -133,10 +154,13 @@ export function AdminDashboard() {
                     <button 
                       onClick={() => {
                         const input = document.getElementById('admin-new-student-input') as HTMLInputElement;
+                        const yearInput = document.getElementById('admin-new-student-year') as HTMLInputElement;
                         const val = input?.value.trim();
+                        const yearVal = yearInput?.value ? parseInt(yearInput.value) : undefined;
                         if (val && selectedCourseId) {
-                          useStore.getState().addNewStudentToCourse(val, selectedCourseId);
+                          useStore.getState().addNewStudentToCourse(val, selectedCourseId, yearVal);
                           if (input) input.value = '';
+                          if (yearInput) yearInput.value = '';
                         }
                       }}
                       className="bg-brand-blue text-white w-full sm:w-auto px-4 py-2 rounded-lg font-bold hover:bg-blue-900 transition-colors whitespace-nowrap"
@@ -184,7 +208,14 @@ export function AdminDashboard() {
                             return (
                               <tr key={a.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="py-4 px-4 text-sm font-medium text-gray-900">
-                                  {student?.name || 'Utente rimosso'}
+                                  <div className="flex items-center gap-2">
+                                    <span>{student?.name || 'Utente rimosso'}</span>
+                                    {student?.birthYear && (
+                                      <span className="bg-gray-200 text-gray-700 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                        {student.birthYear.toString().slice(-2)}
+                                      </span>
+                                    )}
+                                  </div>
                                 </td>
                                 <td className="py-4 px-4 text-sm">
                                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

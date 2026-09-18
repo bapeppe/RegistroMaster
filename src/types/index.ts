@@ -11,6 +11,7 @@ export interface User {
 export interface Student {
   id: string;
   name: string;
+  birthYear?: number;
 }
 
 export interface Course {

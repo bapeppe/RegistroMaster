@@ -25,7 +25,7 @@ interface StoreState {
   deleteCourse: (id: string) => Promise<void>;
   
   addStudent: (student: Student) => void;
-  addNewStudentToCourse: (name: string, course_id: string) => Promise<void>;
+  addNewStudentToCourse: (name: string, course_id: string, birthYear?: number) => Promise<void>;
   enrollStudent: (student_id: string, course_id: string) => void;
   unenrollStudent: (student_id: string, course_id: string) => void;
   removeStudentFromCourse: (student_id: string, course_id: string) => Promise<void>;
@@ -125,12 +125,12 @@ export const useStore = create<StoreState>((set) => ({
   },
   
   addStudent: (student) => set((state) => ({ students: [...state.students, student] })),
-  addNewStudentToCourse: async (name, course_id) => {
+  addNewStudentToCourse: async (name, course_id, birthYear) => {
     const newStudentId = 's' + Math.random().toString(36).substr(2, 9);
     
     // Optimistic UI update
     set((state) => ({
-      students: [...state.students, { id: newStudentId, name }],
+      students: [...state.students, { id: newStudentId, name, birthYear }],
       enrollments: [...state.enrollments, { student_id: newStudentId, course_id }]
     }));
 
@@ -139,7 +139,7 @@ export const useStore = create<StoreState>((set) => ({
       await fetch(`${API_URL}/students`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: newStudentId, name })
+        body: JSON.stringify({ id: newStudentId, name, birthYear })
       });
 
       // 2. Create enrollment in DB
