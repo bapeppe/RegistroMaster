@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
 import { format } from 'date-fns';
-import { Calendar, Users, Activity, ChevronLeft, ChevronRight, Clock, User, Search } from 'lucide-react';
+import { Calendar, Users, Activity, ChevronLeft, ChevronRight, Clock, User, Search, Pencil, Trash2, X, Save } from 'lucide-react';
+import type { Student } from '../../types';
 
 export function AdminDashboard() {
   const courses = useStore(state => state.courses);
   const users = useStore(state => state.users);
   const students = useStore(state => state.students);
   const attendances = useStore(state => state.attendances);
+  const deleteStudent = useStore(state => state.deleteStudent);
+  const updateStudent = useStore(state => state.updateStudent);
   
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [studentSearchQuery, setStudentSearchQuery] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   const instructors = users.filter(u => u.role === 'instructor');
 
@@ -243,18 +247,44 @@ export function AdminDashboard() {
         ) : selectedStudentId ? (
           /* Dettaglio Allievo Selezionato */
           <div>
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-4">
-              <button 
-                onClick={() => setSelectedStudentId(null)}
-                className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                title="Torna alla dashboard"
-              >
-                <ChevronLeft size={20} className="text-gray-600" />
-              </button>
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">{selectedStudent?.name}</h2>
-                <p className="text-sm text-gray-500">Storico Completo Presenze</p>
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setSelectedStudentId(null)}
+                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                  title="Torna alla dashboard"
+                >
+                  <ChevronLeft size={20} className="text-gray-600" />
+                </button>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">{selectedStudent?.name}</h2>
+                  <p className="text-sm text-gray-500">Storico Completo Presenze</p>
+                </div>
               </div>
+              
+              {selectedStudent && (
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setEditingStudent(selectedStudent)}
+                    className="p-2 text-gray-500 hover:text-brand-blue hover:bg-blue-50 rounded-full transition-colors"
+                    title="Modifica Allievo"
+                  >
+                    <Pencil size={18} />
+                  </button>
+                  <button 
+                    onClick={async () => {
+                      if (window.confirm(`Attenzione: Eliminerai definitivamente ${selectedStudent.name} dal sistema e da tutti i corsi. Procedere?`)) {
+                        await deleteStudent(selectedStudent.id);
+                        setSelectedStudentId(null);
+                      }
+                    }}
+                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                    title="Elimina Allievo"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              )}
             </div>
             
             <div className="p-6">
@@ -381,6 +411,53 @@ export function AdminDashboard() {
           </div>
         )}
       </div>
+
+      {editingStudent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-brand-blue text-white">
+              <h3 className="font-bold text-lg">Modifica Allievo</h3>
+              <button onClick={() => setEditingStudent(null)} className="text-white/70 hover:text-white"><X size={20} /></button>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome e Cognome</label>
+                  <input 
+                    type="text" 
+                    value={editingStudent.name} 
+                    onChange={e => setEditingStudent({...editingStudent, name: e.target.value})} 
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Anno di nascita</label>
+                  <input 
+                    type="number" 
+                    value={editingStudent.birthYear || ''} 
+                    onChange={e => setEditingStudent({...editingStudent, birthYear: e.target.value ? parseInt(e.target.value) : undefined})} 
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" 
+                    placeholder="es. 2022"
+                  />
+                </div>
+                <div className="flex justify-end pt-4">
+                  <button 
+                    onClick={async () => {
+                      if (editingStudent.name.trim()) {
+                        await updateStudent(editingStudent);
+                        setEditingStudent(null);
+                      }
+                    }}
+                    className="bg-brand-blue text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-blue-900 transition-colors"
+                  >
+                    <Save size={16} /> Salva Modifiche
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
