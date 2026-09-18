@@ -127,7 +127,7 @@ export function InstructorDashboard() {
                   <span className="font-medium text-lg text-gray-900">{student.name}</span>
                   {student.birthYear && (
                     <span className="bg-gray-200 text-gray-700 text-xs font-bold px-1.5 py-0.5 rounded">
-                      {student.birthYear.toString().slice(-2)}
+                      {student.birthYear}
                     </span>
                   )}
                 </div>

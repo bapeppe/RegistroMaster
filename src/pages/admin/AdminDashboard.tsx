@@ -212,7 +212,7 @@ export function AdminDashboard() {
                                     <span>{student?.name || 'Utente rimosso'}</span>
                                     {student?.birthYear && (
                                       <span className="bg-gray-200 text-gray-700 text-[10px] font-bold px-1.5 py-0.5 rounded">
-                                        {student.birthYear.toString().slice(-2)}
+                                        {student.birthYear}
                                       </span>
                                     )}
                                   </div>
