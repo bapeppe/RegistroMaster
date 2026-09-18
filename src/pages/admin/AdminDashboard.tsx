@@ -17,6 +17,7 @@ export function AdminDashboard() {
   const [studentSearchQuery, setStudentSearchQuery] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [expandedInstructorId, setExpandedInstructorId] = useState<string | null>(null);
 
   const instructors = users.filter(u => u.role === 'instructor');
 
@@ -371,45 +372,62 @@ export function AdminDashboard() {
               </div>
             </div>
             <div className="p-3 sm:p-6 bg-gray-50/30">
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {instructors.map(instructor => {
                   const instructorCourses = courses.filter(c => c.primary_instructor_id === instructor.id);
                   if (instructorCourses.length === 0) return null;
                   
+                  const isExpanded = expandedInstructorId === instructor.id;
+
                   return (
-                    <div key={instructor.id} className="space-y-4">
-                      <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 border-b border-gray-200 pb-2">
-                        <User size={20} className="text-brand-blue" />
-                        {instructor.name}
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {instructorCourses.map(course => (
-                          <div 
-                            key={course.id} 
-                            onClick={() => setSelectedCourseId(course.id)}
-                            className="bg-white p-5 rounded-xl border border-gray-100 hover:border-brand-blue/30 hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
-                          >
-                            <div>
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-bold text-gray-900 group-hover:text-brand-blue transition-colors text-lg leading-tight pr-4">{course.name}</h3>
-                                <div className="p-1.5 bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors shrink-0">
-                                  <ChevronRight size={18} className="text-gray-400 group-hover:text-brand-blue" />
+                    <div key={instructor.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div 
+                        className="px-6 py-4 bg-white flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+                        onClick={() => setExpandedInstructorId(isExpanded ? null : instructor.id)}
+                      >
+                        <h3 className="text-lg font-bold text-gray-800 flex items-center gap-3">
+                          <div className="p-2 bg-blue-50 text-brand-blue rounded-lg">
+                            <User size={20} />
+                          </div>
+                          {instructor.name}
+                        </h3>
+                        <div className="text-gray-400">
+                          {isExpanded ? <ChevronLeft size={20} className="-rotate-90 transition-transform" /> : <ChevronRight size={20} className="transition-transform" />}
+                        </div>
+                      </div>
+                      
+                      {isExpanded && (
+                        <div className="p-6 pt-2 bg-gray-50/50 border-t border-gray-100">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {instructorCourses.map(course => (
+                              <div 
+                                key={course.id} 
+                                onClick={() => setSelectedCourseId(course.id)}
+                                className="bg-white p-5 rounded-xl border border-gray-100 hover:border-brand-blue/30 hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
+                              >
+                                <div>
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h3 className="font-bold text-gray-900 group-hover:text-brand-blue transition-colors text-lg leading-tight pr-4">{course.name}</h3>
+                                    <div className="p-1.5 bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors shrink-0">
+                                      <ChevronRight size={18} className="text-gray-400 group-hover:text-brand-blue" />
+                                    </div>
+                                  </div>
+                                  <div className="mb-4">
+                                    <span className="inline-flex px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase tracking-wider">{course.level}</span>
+                                  </div>
+                                </div>
+                                <div className="pt-3 border-t border-gray-50">
+                                  <div className="text-sm text-gray-600 flex flex-col gap-1.5">
+                                    <div className="flex items-center gap-2"><Calendar size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.schedule_days}</span></div>
+                                    <div className="flex items-center gap-2"><Clock size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.time}</span></div>
+                                    <div className="flex items-center gap-2"><User size={14} className="text-gray-400 shrink-0"/><span className="truncate font-medium">{instructor.name}</span></div>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="mb-4">
-                                <span className="inline-flex px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase tracking-wider">{course.level}</span>
-                              </div>
-                            </div>
-                            <div className="pt-3 border-t border-gray-50">
-                              <div className="text-sm text-gray-600 flex flex-col gap-1.5">
-                                <div className="flex items-center gap-2"><Calendar size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.schedule_days}</span></div>
-                                <div className="flex items-center gap-2"><Clock size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.time}</span></div>
-                                <div className="flex items-center gap-2"><User size={14} className="text-gray-400 shrink-0"/><span className="truncate font-medium">{instructor.name}</span></div>
-                              </div>
-                            </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -417,40 +435,58 @@ export function AdminDashboard() {
                 {(() => {
                   const unassignedCourses = courses.filter(c => !instructors.some(i => i.id === c.primary_instructor_id));
                   if (unassignedCourses.length === 0) return null;
+                  
+                  const isExpanded = expandedInstructorId === 'unassigned';
+
                   return (
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 border-b border-gray-200 pb-2">
-                        <User size={20} className="text-gray-400" />
-                        Nessun Istruttore Assegnato
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {unassignedCourses.map(course => (
-                          <div 
-                            key={course.id} 
-                            onClick={() => setSelectedCourseId(course.id)}
-                            className="bg-white p-5 rounded-xl border border-gray-100 hover:border-brand-blue/30 hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
-                          >
-                            <div>
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-bold text-gray-900 group-hover:text-brand-blue transition-colors text-lg leading-tight pr-4">{course.name}</h3>
-                                <div className="p-1.5 bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors shrink-0">
-                                  <ChevronRight size={18} className="text-gray-400 group-hover:text-brand-blue" />
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div 
+                        className="px-6 py-4 bg-white flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+                        onClick={() => setExpandedInstructorId(isExpanded ? null : 'unassigned')}
+                      >
+                        <h3 className="text-lg font-bold text-gray-800 flex items-center gap-3">
+                          <div className="p-2 bg-gray-100 text-gray-500 rounded-lg">
+                            <User size={20} />
+                          </div>
+                          Nessun Istruttore Assegnato
+                        </h3>
+                        <div className="text-gray-400">
+                          {isExpanded ? <ChevronLeft size={20} className="-rotate-90 transition-transform" /> : <ChevronRight size={20} className="transition-transform" />}
+                        </div>
+                      </div>
+                      
+                      {isExpanded && (
+                        <div className="p-6 pt-2 bg-gray-50/50 border-t border-gray-100">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {unassignedCourses.map(course => (
+                              <div 
+                                key={course.id} 
+                                onClick={() => setSelectedCourseId(course.id)}
+                                className="bg-white p-5 rounded-xl border border-gray-100 hover:border-brand-blue/30 hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between"
+                              >
+                                <div>
+                                  <div className="flex justify-between items-start mb-2">
+                                    <h3 className="font-bold text-gray-900 group-hover:text-brand-blue transition-colors text-lg leading-tight pr-4">{course.name}</h3>
+                                    <div className="p-1.5 bg-gray-50 rounded-full group-hover:bg-blue-50 transition-colors shrink-0">
+                                      <ChevronRight size={18} className="text-gray-400 group-hover:text-brand-blue" />
+                                    </div>
+                                  </div>
+                                  <div className="mb-4">
+                                    <span className="inline-flex px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase tracking-wider">{course.level}</span>
+                                  </div>
+                                </div>
+                                <div className="pt-3 border-t border-gray-50">
+                                  <div className="text-sm text-gray-600 flex flex-col gap-1.5">
+                                    <div className="flex items-center gap-2"><Calendar size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.schedule_days}</span></div>
+                                    <div className="flex items-center gap-2"><Clock size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.time}</span></div>
+                                    <div className="flex items-center gap-2"><User size={14} className="text-gray-400 shrink-0"/><span className="truncate font-medium">Nessun Istruttore</span></div>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="mb-4">
-                                <span className="inline-flex px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-bold uppercase tracking-wider">{course.level}</span>
-                              </div>
-                            </div>
-                            <div className="pt-3 border-t border-gray-50">
-                              <div className="text-sm text-gray-600 flex flex-col gap-1.5">
-                                <div className="flex items-center gap-2"><Calendar size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.schedule_days}</span></div>
-                                <div className="flex items-center gap-2"><Clock size={14} className="text-gray-400 shrink-0"/><span className="truncate">{course.time}</span></div>
-                                <div className="flex items-center gap-2"><User size={14} className="text-gray-400 shrink-0"/><span className="truncate font-medium">Nessun Istruttore</span></div>
-                              </div>
-                            </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
