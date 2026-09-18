@@ -61,6 +61,19 @@ app.post('/api/students', async (req, res) => {
   }
 });
 
+app.put('/api/students/:id', async (req, res) => {
+  try {
+    const updatedStudent = await Student.findOneAndUpdate(
+      { id: req.params.id },
+      req.body,
+      { new: true }
+    );
+    res.json(updatedStudent);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update student' });
+  }
+});
+
 app.delete('/api/students/:id', async (req, res) => {
   try {
     await Student.deleteOne({ id: req.params.id });

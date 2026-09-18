@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../store/useStore';
-import { Users, GraduationCap, Plus, Trash2, X, Save } from 'lucide-react';
+import { Users, GraduationCap, Plus, Trash2, X, Save, Pencil } from 'lucide-react';
+import type { Student } from '../../types';
 
 export function UserManagement() {
   const users = useStore(state => state.users);
@@ -10,8 +11,11 @@ export function UserManagement() {
   const deleteUser = useStore(state => state.deleteUser);
   const deleteStudent = useStore(state => state.deleteStudent);
 
+  const updateStudent = useStore(state => state.updateStudent);
+
   const [showUserForm, setShowUserForm] = useState(false);
   const [userForm, setUserForm] = useState({ name: '', role: 'instructor', password: '' });
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,17 +170,26 @@ export function UserManagement() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <button 
-                            onClick={async () => {
-                              if (window.confirm(`Attenzione: Eliminerai definitivamente ${s.name} dal sistema e da tutti i corsi. Procedere?`)) {
-                                await deleteStudent(s.id);
-                              }
-                            }}
-                            className="text-gray-400 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-all"
-                            title="Elimina Allievo"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                          <div className="flex justify-end gap-2">
+                            <button 
+                              onClick={() => setEditingStudent(s)}
+                              className="text-gray-400 hover:text-brand-blue p-2 transition-all"
+                              title="Modifica Allievo"
+                            >
+                              <Pencil size={18} />
+                            </button>
+                            <button 
+                              onClick={async () => {
+                                if (window.confirm(`Attenzione: Eliminerai definitivamente ${s.name} dal sistema e da tutti i corsi. Procedere?`)) {
+                                  await deleteStudent(s.id);
+                                }
+                              }}
+                              className="text-gray-400 hover:text-red-500 p-2 transition-all"
+                              title="Elimina Allievo"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -188,6 +201,53 @@ export function UserManagement() {
         </div>
 
       </div>
+      
+      {editingStudent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-brand-blue text-white">
+              <h3 className="font-bold text-lg">Modifica Allievo</h3>
+              <button onClick={() => setEditingStudent(null)} className="text-white/70 hover:text-white"><X size={20} /></button>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome e Cognome</label>
+                  <input 
+                    type="text" 
+                    value={editingStudent.name} 
+                    onChange={e => setEditingStudent({...editingStudent, name: e.target.value})} 
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Anno di nascita</label>
+                  <input 
+                    type="number" 
+                    value={editingStudent.birthYear || ''} 
+                    onChange={e => setEditingStudent({...editingStudent, birthYear: e.target.value ? parseInt(e.target.value) : undefined})} 
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-blue focus:border-brand-blue" 
+                    placeholder="es. 2022"
+                  />
+                </div>
+                <div className="flex justify-end pt-4">
+                  <button 
+                    onClick={async () => {
+                      if (editingStudent.name.trim()) {
+                        await updateStudent(editingStudent);
+                        setEditingStudent(null);
+                      }
+                    }}
+                    className="bg-brand-blue text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 hover:bg-blue-900 transition-colors"
+                  >
+                    <Save size={16} /> Salva Modifiche
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -25,6 +25,7 @@ interface StoreState {
   deleteCourse: (id: string) => Promise<void>;
   
   addStudent: (student: Student) => void;
+  updateStudent: (student: Student) => Promise<void>;
   addNewStudentToCourse: (name: string, course_id: string, birthYear?: number) => Promise<void>;
   enrollStudent: (student_id: string, course_id: string) => void;
   unenrollStudent: (student_id: string, course_id: string) => void;
@@ -125,6 +126,23 @@ export const useStore = create<StoreState>((set) => ({
   },
   
   addStudent: (student) => set((state) => ({ students: [...state.students, student] })),
+  
+  updateStudent: async (student) => {
+    // Optimistic UI update
+    set((state) => ({
+      students: state.students.map(s => s.id === student.id ? student : s)
+    }));
+    try {
+      await fetch(`${API_URL}/students/${student.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(student)
+      });
+    } catch (error) {
+      console.error('Failed to update student:', error);
+    }
+  },
+
   addNewStudentToCourse: async (name, course_id, birthYear) => {
     const newStudentId = 's' + Math.random().toString(36).substr(2, 9);
     
