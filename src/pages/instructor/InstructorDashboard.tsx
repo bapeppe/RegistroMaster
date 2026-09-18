@@ -122,27 +122,29 @@ export function InstructorDashboard() {
             const status = localAttendance[student.id];
             
             return (
-              <div key={student.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-lg text-gray-900">{student.name}</span>
-                  {student.birthYear && (
-                    <span className="bg-gray-200 text-gray-700 text-xs font-bold px-1.5 py-0.5 rounded">
-                      {student.birthYear}
-                    </span>
-                  )}
+              <div key={student.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-2 hover:shadow-md transition-shadow">
+                <div className="flex-1 min-w-0">
+                  <span className="font-medium text-lg text-gray-900 break-words leading-tight inline-block">
+                    {student.name}
+                    {student.birthYear && (
+                      <span className="ml-2 inline-block bg-gray-200 text-gray-700 text-[11px] font-bold px-1.5 py-0.5 rounded align-middle transform -translate-y-[1px]">
+                        {student.birthYear}
+                      </span>
+                    )}
+                  </span>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3 shrink-0">
                   <button
                     onClick={() => toggleAttendance(student.id, 'present')}
-                    className={`flex items-center justify-center w-14 h-14 rounded-full transition-all ${status === 'present' ? 'bg-green-500 text-white shadow-inner scale-105' : 'bg-gray-100 text-gray-400 hover:bg-green-100 hover:text-green-600'}`}
+                    className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full transition-all ${status === 'present' ? 'bg-green-500 text-white shadow-inner scale-105' : 'bg-gray-100 text-gray-400 hover:bg-green-100 hover:text-green-600'}`}
                   >
-                    <CheckCircle size={32} />
+                    <CheckCircle size={28} className="sm:w-8 sm:h-8" />
                   </button>
                   <button
                     onClick={() => toggleAttendance(student.id, 'absent')}
-                    className={`flex items-center justify-center w-14 h-14 rounded-full transition-all ${status === 'absent' ? 'bg-red-500 text-white shadow-inner scale-105' : 'bg-gray-100 text-gray-400 hover:bg-red-100 hover:text-red-600'}`}
+                    className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full transition-all ${status === 'absent' ? 'bg-red-500 text-white shadow-inner scale-105' : 'bg-gray-100 text-gray-400 hover:bg-red-100 hover:text-red-600'}`}
                   >
-                    <XCircle size={32} />
+                    <XCircle size={28} className="sm:w-8 sm:h-8" />
                   </button>
                 </div>
               </div>
